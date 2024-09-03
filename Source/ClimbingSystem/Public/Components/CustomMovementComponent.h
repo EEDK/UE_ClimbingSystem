@@ -23,12 +23,15 @@ private:
 
 	TArray<FHitResult> DoCapsuleTraceMultiByObject(const FVector& Start, const FVector& End,
 	                                               bool bShowDebugShape = false);
+	FHitResult DoLineTraceSingleByObject(const FVector& Start, const FVector& End, bool bShowDebugShape = false);
 
 #pragma endregion
 
 #pragma region ClimbCore
 
 	void TraceClimbableSurfaces();
+
+	void TraceFromEyeHeight(float TraceDistance, float TraceStartOffset = 0.f);
 
 #pragma endregion
 
