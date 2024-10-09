@@ -171,6 +171,9 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 	}
 
 	/*등반 가능한 모든 표면 정보에 대하여 등반을 중단해야 하는지 확인*/
+	TraceClimbableSurfaces();
+
+	ProcessClimbableSurfaceInfo();
 
 	RestorePreAdditiveRootMotionVelocity();
 
@@ -201,6 +204,29 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 	}
 }
 
+// ClimbableSurfacesTracedResults를 기반으로 해당 표면의 중앙에 위치와 법선벡터 계산
+void UCustomMovementComponent::ProcessClimbableSurfaceInfo()
+{
+	CurrentClimbableSurfaceLocation = FVector::ZeroVector;
+	CurrentClimbableSurfaceNormal = FVector::ZeroVector;
+
+	if (ClimbableSurfacesTracedResults.IsEmpty()) return;
+
+	for (const FHitResult& TracedHitResult : ClimbableSurfacesTracedResults)
+	{
+		CurrentClimbableSurfaceLocation += TracedHitResult.ImpactPoint;
+		CurrentClimbableSurfaceNormal += TracedHitResult.ImpactNormal;
+	}
+
+	CurrentClimbableSurfaceLocation /= ClimbableSurfacesTracedResults.Num();
+	CurrentClimbableSurfaceNormal = CurrentClimbableSurfaceNormal.GetSafeNormal();
+
+	Debug::Print(TEXT("CurrentClimbableSurfaceLocation: ") + CurrentClimbableSurfaceLocation.ToCompactString(),
+	             FColor::Cyan, 1);
+	Debug::Print(TEXT("CurrentClimbableSurfaceNormal: ") + CurrentClimbableSurfaceNormal.ToCompactString(),
+			 FColor::Red, 2);
+}
+
 bool UCustomMovementComponent::IsClimbing() const
 {
 	return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Climb;
@@ -213,7 +239,7 @@ bool UCustomMovementComponent::TraceClimbableSurfaces()
 	const FVector Start = UpdatedComponent->GetComponentLocation() + StartOffset;
 	const FVector End = Start + UpdatedComponent->GetForwardVector();
 
-	ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true, true);
+	ClimbableSurfacesTracedResults = DoCapsuleTraceMultiByObject(Start, End, true);
 
 	return !ClimbableSurfacesTracedResults.IsEmpty();
 }
@@ -226,7 +252,7 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 	const FVector Start = ComponentLocation + EyeHeightOffset;
 	const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
-	return DoLineTraceSingleByObject(Start, End, true, true);
+	return DoLineTraceSingleByObject(Start, End);
 }
 
 
