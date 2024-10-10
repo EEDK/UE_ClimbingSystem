@@ -110,25 +110,57 @@ void AClimbingSystemCharacter::SetupPlayerInputComponent(UInputComponent* Player
 
 void AClimbingSystemCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	if (!CustomMovementComponent)
+	{
+		return;
+	}
+
+	if (CustomMovementComponent->IsClimbing())
+	{
+		HandleClimbMovementInput(Value);
+	}
+	else
+	{
+		HandleGroundMovementInput(Value);
+	}
+}
+
+void AClimbingSystemCharacter::HandleGroundMovementInput(const FInputActionValue& Value)
+{
+	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
-		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void AClimbingSystemCharacter::HandleClimbMovementInput(const FInputActionValue& Value)
+{
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// A는 오르려는 벽의 법선벡터의 반대방향 ( 내 몸 앞으로 가는 방향 )
+	// B는 Actor의 오른쪽 방향백터 ForwardDirection = A x B는 수직된 Z축을 향해 가는 벡터 
+	const FVector ForwardDirection = FVector::CrossProduct(
+		-CustomMovementComponent->GetClimbableSurfaceNormal(),
+		GetActorRightVector()
+	);
+
+	const FVector RightDirection = FVector::CrossProduct(
+		-CustomMovementComponent->GetClimbableSurfaceNormal(),
+		-GetActorUpVector()
+	);
+
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void AClimbingSystemCharacter::Look(const FInputActionValue& Value)
