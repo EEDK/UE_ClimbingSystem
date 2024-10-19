@@ -12,7 +12,8 @@ class AClimbingSystemCharacter;
  * 
  */
 UCLASS()
-class CLIMBINGSYSTEM_API UCharacterAnimInstance : public UAnimInstance {
+class CLIMBINGSYSTEM_API UCharacterAnimInstance : public UAnimInstance
+{
     GENERATED_BODY()
 
 public:
