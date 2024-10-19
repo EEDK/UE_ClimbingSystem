@@ -1,0 +1,51 @@
+﻿# Based on Epic Games' C++ Coding Standard
+
+---
+# Formatting version
+BasedOnStyle: LLVM
+IndentWidth: 4              # 4 spaces per indentation level
+TabWidth: 4                 # Tab width is 4 spaces
+UseTab: Never               # Always use spaces instead of tabs
+AllowShortFunctionsOnASingleLine: Empty # Only allow empty functions on a single line
+
+# Brace formatting
+BraceWrapping:
+  AfterClass: true          # Opening braces for class definitions go on a new line
+  AfterControlStatement: false # Brace after control statements stays on the same line
+  AfterEnum: true           # Enum opening braces on a new line
+  AfterFunction: true       # Function opening braces go on a new line
+  AfterNamespace: true      # Namespace opening braces go on a new line
+  BeforeCatch: true         # Place catch on the same line as the brace closing the try block
+  SplitEmptyFunction: false # Do not split empty functions
+
+# Control the format of class members and inheritance
+AlignTrailingComments: true # Align comments at the end of lines
+
+# Include spacing and indentation rules
+SpaceBeforeParens: ControlStatements   # Space before parentheses in control statements (if, for, while, etc.)
+SpaceAfterCStyleCast: true  # Space after C-style casts
+SpaceBeforeCpp11BracedList: false # No space before C++11 braced initializer lists
+SpaceInEmptyParentheses: false # No spaces in empty function parentheses
+SpacesInParentheses: false  # No spaces within parentheses
+
+# Indentation for function declarations
+IndentCaseLabels: true      # Case labels in switch statements are indented
+IndentWrappedFunctionNames: false # Do not indent function names when wrapping
+
+# Pointer and reference alignment
+PointerAlignment: Left      # Align * and & with the variable type (Epic's convention)
+DerivePointerAlignment: false
+
+# Line-breaking rules
+AllowShortIfStatementsOnASingleLine: false # Do not allow short if statements on a single line
+AllowShortLoopsOnASingleLine: false        # Do not allow short loops on a single line
+
+# Comment formatting
+CommentPragmas: '^ IWYU pragma:'  # Recognize special pragmas like IWYU
+
+# Include order
+SortIncludes: false         # Do not automatically sort #includes
+IncludeBlocks: Preserve     # Preserve include blocks
+
+# Line length rule
+ColumnLimit: 120            # Set the maximum line length to 120 characters
