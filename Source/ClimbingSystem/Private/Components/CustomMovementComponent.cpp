@@ -8,8 +8,18 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-
 #pragma region OverridenFunction
+
+void UCustomMovementComponent::BeginPlay() {
+    Super::BeginPlay();
+
+    OwningPlayerAnimInstance = CharacterOwner->GetMesh()->GetAnimInstance();
+
+    if (OwningPlayerAnimInstance) {
+        OwningPlayerAnimInstance->OnMontageEnded.AddDynamic(this, &ThisClass::OnClimbMontageEnded);
+        OwningPlayerAnimInstance->OnMontageBlendingOut.AddDynamic(this, &ThisClass::OnClimbMontageEnded);
+    }
+}
 
 void UCustomMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
                                              FActorComponentTickFunction* ThisTickFunction) {
@@ -132,8 +142,7 @@ void UCustomMovementComponent::ToggleClimbing(bool bEnableClimb) {
     if (bEnableClimb) {
         if (CanStartClimb()) {
             // Enter the climb state
-            StartClimbing();
-        } else {
+            PlayClimbMontage(IdleToClimbMontage);
         }
     } else {
         // Stop Climbing
@@ -253,6 +262,18 @@ void UCustomMovementComponent::SnapMovementToClimbableSurfaces(float DeltaTime) 
     const FVector SnapVector = -CurrentClimbableSurfaceNormal * ProjectedCharacterToSurface.Length();
 
     UpdatedComponent->MoveComponent(SnapVector * DeltaTime * MaxClimbSpeed, UpdatedComponent->GetComponentQuat(), true);
+}
+
+void UCustomMovementComponent::PlayClimbMontage(UAnimMontage* MontageToPlay) {
+    if (!MontageToPlay || !OwningPlayerAnimInstance || OwningPlayerAnimInstance->IsAnyMontagePlaying()) {
+        return;
+    }
+
+    OwningPlayerAnimInstance->Montage_Play(MontageToPlay);
+}
+
+void UCustomMovementComponent::OnClimbMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
+    Debug::Print(TEXT("Climb Montage Ended"));
 }
 
 bool UCustomMovementComponent::IsClimbing() const {
