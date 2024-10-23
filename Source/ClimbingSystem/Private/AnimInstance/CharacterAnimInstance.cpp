@@ -26,6 +26,7 @@ void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds) {
     GetAirSpeed();
     GetShouldMove();
     GetIsFalling();
+    GetIsClimbing();
 }
 
 void UCharacterAnimInstance::GetGroundSpeed() {
@@ -45,4 +46,8 @@ void UCharacterAnimInstance::GetShouldMove() {
 
 void UCharacterAnimInstance::GetIsFalling() {
     bIsFalling = CustomMovementComponent->IsFalling();
+}
+
+void UCharacterAnimInstance::GetIsClimbing() {
+    bIsClimbing = CustomMovementComponent->IsClimbing();
 }

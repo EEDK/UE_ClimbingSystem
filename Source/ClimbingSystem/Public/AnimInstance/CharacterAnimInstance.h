@@ -12,8 +12,7 @@ class AClimbingSystemCharacter;
  * 
  */
 UCLASS()
-class CLIMBINGSYSTEM_API UCharacterAnimInstance : public UAnimInstance
-{
+class CLIMBINGSYSTEM_API UCharacterAnimInstance : public UAnimInstance {
     GENERATED_BODY()
 
 public:
@@ -42,4 +41,8 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Reference, meta = (AllowPrivateAccess = "true"))
     bool bIsFalling;
     void GetIsFalling();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Reference, meta = (AllowPrivateAccess = "true"))
+    bool bIsClimbing;
+    void GetIsClimbing();
 };
