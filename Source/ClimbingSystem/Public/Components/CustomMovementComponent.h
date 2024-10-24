@@ -125,4 +125,6 @@ public:
     FORCEINLINE FVector GetClimbableSurfaceNormal() const {
         return CurrentClimbableSurfaceNormal;
     }
+
+	FVector GetUnrotatedClimbVelocity() const;
 };

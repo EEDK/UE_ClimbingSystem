@@ -6,6 +6,7 @@
 #include "ClimbingSystem/ClimbingSystemCharacter.h"
 #include "ClimbingSystem/DebugHelpher.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 #pragma region OverridenFunction
@@ -282,6 +283,7 @@ bool UCustomMovementComponent::IsClimbing() const {
     return MovementMode == MOVE_Custom && CustomMovementMode == ECustomMovementMode::MOVE_Climb;
 }
 
+
 // 등반 할 수 있는 표면을 추적후, 등반가능한 표면이 있을경우 true값 반환
 bool UCustomMovementComponent::TraceClimbableSurfaces() {
     const FVector StartOffset = UpdatedComponent->GetForwardVector() * 30.f;
@@ -301,6 +303,11 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
     const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
     return DoLineTraceSingleByObject(Start, End);
+}
+
+
+FVector UCustomMovementComponent::GetUnrotatedClimbVelocity() const {
+    return UKismetMathLibrary::Quat_UnrotateVector(UpdatedComponent->GetComponentQuat(), Velocity);
 }
 
 #pragma endregion
