@@ -14,6 +14,3 @@ class AClimbingSystemGameMode : public AGameModeBase
 public:
 	AClimbingSystemGameMode();
 };
-
-
-
