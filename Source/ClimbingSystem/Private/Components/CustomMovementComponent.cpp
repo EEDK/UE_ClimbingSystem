@@ -206,7 +206,6 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 	{
 		return;
 	}
-	
 
 	/*등반 가능한 모든 표면 정보에 대하여 등반을 중단해야 하는지 확인*/
 	TraceClimbableSurfaces();
@@ -246,6 +245,15 @@ void UCustomMovementComponent::PhysClimb(float deltaTime, int32 Iterations)
 	}
 
 	SnapMovementToClimbableSurfaces(deltaTime);
+
+	if (CheckHasReachedLedge())
+	{
+		Debug::Print(TEXT("Reached!"), FColor::Green, 1);
+	}
+	else
+	{
+		Debug::Print(TEXT("Not Reached!"), FColor::Red, 1);
+	}
 }
 
 // ClimbableSurfacesTracedResults를 기반으로 해당 표면의 중앙에 위치와 법선벡터 계산
@@ -304,6 +312,29 @@ bool UCustomMovementComponent::CheckHasReachedFloor()
 			GetUnrotatedClimbVelocity().Z < -10.f;
 
 		if (bFloorReached)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool UCustomMovementComponent::CheckHasReachedLedge()
+{
+	FHitResult LedgetHitResult = TraceFromEyeHeight(100.f, 50.f);
+
+	if (!LedgetHitResult.bBlockingHit)
+	{
+		const FVector WalkableSurfaceTraceStart = LedgetHitResult.TraceEnd;
+
+		const FVector DownVector = -UpdatedComponent->GetUpVector();
+		const FVector WalkableSurfaceTraceEnd = WalkableSurfaceTraceStart + DownVector * 100.f;
+
+		FHitResult WalkabkeSurfaceHitResult =
+			DoLineTraceSingleByObject(WalkableSurfaceTraceStart, WalkableSurfaceTraceEnd, true);
+
+		if (WalkabkeSurfaceHitResult.bBlockingHit && GetUnrotatedClimbVelocity().Z > 10.f)
 		{
 			return true;
 		}
@@ -384,7 +415,7 @@ FHitResult UCustomMovementComponent::TraceFromEyeHeight(float TraceDistance, flo
 	const FVector Start = ComponentLocation + EyeHeightOffset;
 	const FVector End = Start + UpdatedComponent->GetForwardVector() * TraceDistance;
 
-	return DoLineTraceSingleByObject(Start, End);
+	return DoLineTraceSingleByObject(Start, End, true);
 }
 
 
